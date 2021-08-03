@@ -10,6 +10,16 @@ use Illuminate\Support\Facades\Validator;
 class ProductController extends Controller
 {
     /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -40,10 +50,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'title' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'image' => 'nullable|image:png,jpg,jpeg',
+            'image' => 'nullable|image|max:2048',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -62,7 +69,7 @@ class ProductController extends Controller
             $imageArray ?? [],
         ));
 
-        return response()->json($product, 201);
+        return response()->json(['success' => 'Product has been added successfully.'], 201);
     }
 
     /**
@@ -104,16 +111,12 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-
         if (is_null($product)) {
             return response()->json(['message' => 'Record not found'], 404);
         }
 
         $rules = [
-            'title' => 'required',
-            'description' => 'required',
-            'price' => 'required',
-            'image' => 'nullable|image:png,jpg,jpeg',
+            'image' => 'nullable|image|max:2048',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -142,11 +145,9 @@ class ProductController extends Controller
                 'description' => $request->description,
                 'price' => $request->price,
             ]);
-
         }
 
-
-        return response()->json($product, 200);
+        return response()->json(['success' => 'Product has been updated successfully.'], 201);
     }
 
     /**
